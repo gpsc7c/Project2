@@ -339,7 +339,6 @@ void vars(Ttoken* tk, FILE* file, char* c, int* row, int* col){
 	if(tk->ID == CREATETK){
 		factorvars(tk, file, c, row, col, coleql);
 		if(*coleql == false){
-			//vars(tk, file, c, row, col);
 			return;
 		}
 		if(tk->ID == INTTK){

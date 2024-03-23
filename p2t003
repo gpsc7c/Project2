@@ -7,7 +7,7 @@ func highfive {
 }
 {
 	create z := 0;
-	while [ z < 3 ] ;
+	while [ z < 3 ] {
 		jump highfive;
 	};
 }
