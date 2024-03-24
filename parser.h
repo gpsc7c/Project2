@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "langscan.h"
 #include "ttoken.h"
+#include "node.h"
 #ifndef PARSER_H
 #define PARSER_H
 void error();
@@ -30,10 +31,10 @@ void M(Ttoken* tk, FILE* file, char* c, int* row, int* col);
 void A(Ttoken* tk, FILE* file, char* c, int* row, int* col);
 void N(Ttoken* tk, FILE* file, char* c, int* row, int* col);
 void expr(Ttoken* tk, FILE* file, char* c, int* row, int* col);
-void factorvars(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* coleql);
-void vars(Ttoken* tk, FILE* file, char* c, int* row, int* col);
+void facvars(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* coleql);
+node* vars(Ttoken* tk, FILE* file, char* c, int* row, int* col);
 void block(Ttoken* tk, FILE* file, char* c, int* row, int* col);
 void func(Ttoken* tk, FILE* file, char* c, int* row, int* col);
-void program(Ttoken* tk, FILE* file, char* c, int* row, int* col);
+node* program(Ttoken* tk, FILE* file, char* c, int* row, int* col);
 void parser(FILE* file);
 #endif

@@ -7,6 +7,7 @@
 #include "ttoken.h"
 #include "parser.h"
 #include "node.h"
+#include "tree.h"
 
 //enum tokenTypes{IDTK, INTTK, ASSIGNTK, GREATTK, LESSTK, ISEQUALTK, NOTEQUALTK, COLONTK, COLONEQLTK, PLUSTK, MINUSTK, MULTIPLYTK, DIVIDETK, EXPONTK, DOTTK, OPENPARENTK, CLOSEPARENTK, COMMATK, OPENCURLTK, CLOSECURLTK, SEMICOLONTK, OPENSQUARETK, CLOSESQUARETK, ORTK, ANDTK, STARTTK, STOPTK, WHILETK, REPEATTK, UNTILTK, LABELTK, RETURNTK, CINTK, COUTTK, TAPETK, JUMPTK, IFTK, THENTK, PICKTK, CREATETK, SETTK, FUNCTK, EOFTK};
 #ifndef PARSER_C
@@ -16,6 +17,7 @@ void error(){
 	exit(-1);
 }
 void R0(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+	node* nNode = newNode(nonterms[25]);
 	if(tk->ID == GREATTK){
 		*tk = scanner(file, c, row, col);	
 		return;
@@ -46,12 +48,14 @@ void R0(Ttoken* tk, FILE* file, char* c, int* row, int* col){
 	return;
 }
 void RTriplet(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+	node* nNode = newNode(nonterms[24]);
 	expr(tk, file, c, row, col);
 	R0(tk, file, c, row, col);
 	expr(tk, file, c, row, col);
 	return;	
 }
 void RBrackets(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+	node* nNode = newNode(nonterms[23]);
 	if(tk->ID == OPENSQUARETK){
 		*tk = scanner(file, c, row, col);	
 		RTriplet(tk, file, c, row, col);
@@ -65,6 +69,7 @@ void RBrackets(Ttoken* tk, FILE* file, char* c, int* row, int* col){
 }
 
 void gotochk(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
+	node* nNode = newNode(nonterms[27]);
 	if(tk->ID == JUMPTK){
 		*tk = scanner(file, c, row, col);	
 		if(tk->ID == IDTK){
@@ -78,6 +83,7 @@ void gotochk(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
 	return;
 }
 void label(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
+	node* nNode = newNode(nonterms[26]);
 	if(tk->ID == LABELTK){
 		*tk = scanner(file, c, row, col);	
 		if(tk->ID == IDTK){
@@ -91,6 +97,7 @@ void label(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
 	return;
 }
 void assign(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
+	node* nNode = newNode(nonterms[22]);
 	bool set;
 	if(tk->ID == SETTK){
 		*tk = scanner(file, c, row, col);
@@ -114,6 +121,7 @@ void assign(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
 	return;
 }
 void loop2(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
+	node* nNode = newNode(nonterms[21]);
 	if(tk->ID == REPEATTK){
 		*tk = scanner(file, c, row, col);
 		stat(tk, file, c, row, col);
@@ -128,6 +136,7 @@ void loop2(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
 	return;	
 }
 void loop1(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
+	node* nNode = newNode(nonterms[20]);
 	if(tk->ID == WHILETK){
 		*tk = scanner(file, c, row, col);
 		RBrackets(tk, file, c, row, col);
@@ -137,6 +146,7 @@ void loop1(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
 	return;
 }
 void pickbody(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+	node* nNode = newNode(nonterms[19]);
 	stat(tk, file, c, row, col);
 	if(tk->ID == COLONTK){
 		*tk = scanner(file, c, row, col);	
@@ -147,6 +157,7 @@ void pickbody(Ttoken* tk, FILE* file, char* c, int* row, int* col){
 	return;
 }
 void pick(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
+	node* nNode = newNode(nonterms[18]);
 	if(tk->ID == PICKTK){
 		*tk = scanner(file, c, row, col);	
 		expr(tk, file, c, row, col);
@@ -157,6 +168,7 @@ void pick(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
 	return;
 }
 void ifchk(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
+	node* nNode = newNode(nonterms[17]);
 	if(tk->ID == IFTK){
 		*tk = scanner(file, c, row, col);	
 		RBrackets(tk, file, c, row, col);
@@ -170,6 +182,7 @@ void ifchk(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
 	return;
 }
 void out(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
+	node* nNode = newNode(nonterms[16]);
 	if(tk->ID == COUTTK){
 		*tk = scanner(file, c, row, col);	
 		if(tk->ID == IDTK){
@@ -183,6 +196,7 @@ void out(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
 	return;
 }
 void in(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
+	node* nNode = newNode(nonterms[15]);
 	if(tk->ID == CINTK){
 		*tk = scanner(file, c, row, col);	
 		if(tk->ID == IDTK){
@@ -195,13 +209,14 @@ void in(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
 	}
 	return;
 }
-void stat(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+node* stat(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+	node* nNode = newNode(nonterms[14]);
 	bool* found = malloc(sizeof(bool));
 	*found = false;
 	if(tk->ID != OPENCURLTK){
-		in(tk,file,c,row,col,found);
+		newNode->one = in(tk,file,c,row,col,found);
 		if(!*found){
-			out(tk,file,c,row,col,found);
+			newNode->one = out(tk,file,c,row,col,found);
 		}
 		if(!*found){
 			ifchk(tk,file,c,row,col,found);
@@ -222,178 +237,216 @@ void stat(Ttoken* tk, FILE* file, char* c, int* row, int* col){
 			label(tk,file,c,row,col,found);
 		}
 		if(!*found){
-			gotochk(tk,file,c,row,col,found);
+			nNode->one = gotochk(tk,file,c,row,col,found);
 		}
 		if(tk->ID == SEMICOLONTK){
+			nNode->two = newNode(tk);
 			*tk = scanner(file, c, row, col);
 			return;
 		}
 		
 		error();
-		return;
+		return(NULL);
 	}
-	block(tk, file, c, row, col);
-	return;
+	nNode->one = block(tk, file, c, row, col);
+	return(nNode);
 }
-void mStat(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+node* mStat(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+	node* nNode = newNode(nonterms[13]);
 	if(tk->ID == CINTK || tk->ID == COUTTK ||tk->ID == OPENCURLTK ||tk->ID == IFTK ||tk->ID == WHILETK ||tk->ID == REPEATTK ||tk->ID == SETTK ||tk->ID == JUMPTK ||tk->ID == LABELTK ||tk->ID == PICKTK){		
-		stat(tk, file, c, row, col);
+		nNode->one = stat(tk, file, c, row, col);
+		nNode->two = mStat(tk, file, c, row, col);
 	}
-	return;
+	return(nNode);
 }
-void stats(Ttoken* tk, FILE* file, char* c, int* row, int* col){	
-	stat(tk, file, c, row, col);
-	mStat(tk, file, c, row, col);
-	return;
+node* stats(Ttoken* tk, FILE* file, char* c, int* row, int* col){	
+	node* nNode = newNode(nonterms[12]);
+	nNode->one = stat(tk, file, c, row, col);
+	nNode->two = mStat(tk, file, c, row, col);
+	return(nNode);
 }
-void R(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+node* R(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+	node* nNode = newNode(nonterms[11]);
 	if(tk->ID == OPENPARENTK){
+		nNode->one = newNode(tk);
 		*tk = scanner(file, c, row, col);
-		expr(tk, file, c, row, col);
+		nNode->two = expr(tk, file, c, row, col);
 		if(tk->ID == CLOSEPARENTK){
+			nNode->three = newNode(tk);
 			*tk = scanner(file, c, row, col);
-			return;
+			return(nNode);
 		}
 		error();
-		return;
+		return(NULL);
 	}
 	if(tk->ID == IDTK){
+		nNode->one = newNode(tk);
 		*tk = scanner(file, c, row, col);
-		return;
+		return(nNode);
 	}
 	if(tk->ID == INTTK){
+		nNode->one = newNode(tk);
 		*tk = scanner(file, c, row, col);
-		return;
+		return(nNode);
 	}
 	error();
-	return;
+	return(NULL);
 }
-void M(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+node* M(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+	node* nNode = newNode(nonterms[10]);
 	if(tk->ID == EXPONTK){
+		nNode->one = newNode(tk);
 		*tk = scanner(file, c, row, col);
-		M(tk, file, c, row, col);
-		return;
+		nNode->two = M(tk, file, c, row, col);
+		return(nNode);
 	}
-	R(tk, file, c, row, col);
-	return;
+	nNode->one = R(tk, file, c, row, col);
+	return(nNode);
 }
 
-void A(Ttoken* tk, FILE* file, char* c, int* row, int* col){
-	M(tk, file, c, row, col);
+node* A(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+	node* nNode = newNode(nonterms[9]);
+	nNode->one = M(tk, file, c, row, col);
 	if(tk->ID == MULTIPLYTK){
+		nNode->two = newNode(tk);
 		*tk = scanner(file, c, row, col);
-		A(tk, file, c, row, col);
+		nNode->three = A(tk, file, c, row, col);
 	}
-	return;
+	return(nNode);
 }
-void N1(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+node* N1(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+	node* nNode = newNode(nonterms[8]);
 	if(tk->ID == DIVIDETK){
+		nNode->one = newNode(tk);
 		*tk = scanner(file, c, row, col);
-		A(tk, file, c, row, col);
-		N1(tk, file, c, row, col);
-		return;
+		nNode->two = A(tk, file, c, row, col);
+		nNode->three = N1(tk, file, c, row, col);
+		return(nNode);
 	}
 	if(tk->ID == MINUSTK){
+		nNode->one = newNode(tk);
 		*tk = scanner(file, c, row, col);
-		A(tk, file, c, row, col);
-		N1(tk, file, c, row, col);
-		return;
+		nNode->two = A(tk, file, c, row, col);
+		nNode->three = N1(tk, file, c, row, col);
+		return(nNode);
 	}
-	return;
+	return(nNode);
 }
-void N(Ttoken* tk, FILE* file, char* c, int* row, int* col){
-	A(tk, file, c, row, col);
-	N1(tk, file, c, row, col);
-	return;
+node* N(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+	node* nNode = newNode(nonterms[7]);
+	nNode->one = A(tk, file, c, row, col);
+	nNode->two = N1(tk, file, c, row, col);
+	return(nNode);
 }
-void expr(Ttoken* tk, FILE* file, char* c, int* row, int* col){
-	N(tk, file, c, row, col);
+node* expr(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+	node* nNode = newNode(nonterms[6]);
+	nNode-> one = N(tk, file, c, row, col);
 	if(tk->ID == MINUSTK){
+		nNode->two = newNode(tk);
 		*tk = scanner(file, c, row, col);
-		expr(tk, file, c, row, col);
+		nNode->three = expr(tk, file, c, row, col);
 	}
-	return;
+	return(nNode);
 }
 //factorvars is complete
-void factorvars(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* coleql){
+//char nonterms[28][11] = {"TERMINAL", "<program>", "<func>", "<block>", "<vars>", "<facvars>", "<expr>", "<N>", "<N1>", "<A>", "<M>", "<R>", "<stats>", "<mStat>", "<stat>", "<in>", "<out>", "<if>", "<pick>", "<pickbody>", "<loop1>", "<loop2>", "<assign>", "<RBracket>", "<RTriplet>", "<R0>", "<label>", "<goto>"};
+node* facvars(Ttoken* tk,FILE* file, char* c, int* row, int* col, bool* coleql){
+	node* nNode = newNode(nonterms[5]);
 	if(tk->ID == CREATETK){
+		nNode->one = newNode(tk)
 		*tk = scanner(file, c, row, col);
 		if(tk->ID == IDTK){
+			nNode->two = newNode(tk)
 			*tk = scanner(file, c, row, col);
 			if(tk->ID == COLONEQLTK){
+				nNode->three = newNode(tk)
 				*tk = scanner(file, c, row, col);
 				*coleql = true;
-				return;
+				return(nNode);
 			}
 			if(tk->ID ==SEMICOLONTK){
+				nNode->three = newNode(tk)
 				*tk = scanner(file, c, row, col);
-				return;	
+				return(nNode);	
 			}
 		}
 	}
 	error();
-	return;
+	return(NULL);
 }
 //vars is complete
-void vars(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+node* vars(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+	node* nNode = newNode(nonterms[4]);
 	bool* coleql = malloc(sizeof(bool));
 	*coleql = false;
 	if(tk->ID == CREATETK){
-		factorvars(tk, file, c, row, col, coleql);
+		facvars(tk, file, c, row, col, coleql);
 		if(*coleql == false){
-			return;
+			return(nNode);
 		}
 		if(tk->ID == INTTK){
 			*tk = scanner(file, c, row, col);
 			if(tk->ID == SEMICOLONTK){
 				*tk = scanner(file, c, row, col);
 				vars(tk, file, c, row, col);
+				return(nNode);
 			}
 		}
+		error();
+		return(NULL);
 	}
-	return;
+	return(nNode);
 }
 
-void block(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+node* block(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+	node* nNode = newNode(nonterms[3]);
 	if(tk->ID != OPENCURLTK){
 		error();
-		return;
+		return(NULL);
 	}
+	nNode->one = newNode(tk);
 	*tk = scanner(file, c, row, col);
-	vars(tk,file,c,row,col);
-	stats(tk,file,c,row,col);
+	nNode->two = vars(tk,file,c,row,col);
+	nNode->three = stats(tk,file,c,row,col);
 	if(tk->ID != CLOSECURLTK){
 		error();
-		return;
-	}	
+		return(NULL);
+	}
+	nNode->four = newNode[tk];	
 	*tk = scanner(file, c, row, col);
-	return;
+	return(nNode);
 }
-void func(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+node* func(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+	node* nNode = newNode(nonterms[2]);
 	if(tk->ID == FUNCTK){	
+		nNode->one = newNode(tk);
 		*tk = scanner(file, c, row, col);
 		if(tk->ID == IDTK){
+			nNode->two = newNode(tk);
 			*tk = scanner(file, c, row, col);
-			block(tk, file, c, row, col);
-			return;
+			nNode->three = block(tk, file, c, row, col);
+			return(node);
 		}
 	}
 	error();
-	return;
+	return(NULL);
 }
 //Identifies BNF for program
-void program(Ttoken* tk, FILE* file, char* c, int* row, int* col){
-	vars(tk,file,c,row,col);
+node* program(Ttoken* tk, FILE* file, char* c, int* row, int* col){
+	node* root = newNode(nonterms[1]);
+	root->one = vars(tk,file,c,row,col);
 	if(tk->ID == TAPETK){
+		root->two = newNode(tk);
 		*tk = scanner(file, c, row, col);
+		
 		if(tk->ID == FUNCTK){
-			func(tk,file,c,row,col);
+			root->three = func(tk,file,c,row,col);
 		}
-		block(tk,file,c,row,col);
-		return;
+		root->four = block(tk,file,c,row,col);
+		return root;
 	}
 	error();
-	return;
+	return(NULL);
 }
 
 void parser(FILE* file){
@@ -404,7 +457,8 @@ void parser(FILE* file){
 	*col = 0;
 	*row = 1;
 	char c[2] = {'\0','\0'};		//character iterator
+	node* root;
 	*tk = scanner(file, c, row, col);
-	program(tk, file, c, row, col);
+	root = program(tk, file, c, row, col);
 }
 #endif
