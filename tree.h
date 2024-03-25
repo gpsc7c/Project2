@@ -4,223 +4,102 @@
  *  Created on: Jan 20, 2024
  *      Author: Greg
  */
+#ifndef TREE_H_
+#define TREE_H_
 #include "node.h"
 #include <stdio.h>
 #include <string.h>
-#ifndef TREE_H_
-#define TREE_H_
+char nonterms[28][11] = {"TERMINAL", "<program>", "<func>", "<block>", "<vars>", "<facvars>", "<expr>", "<N>", "<N1>", "<A>", "<M>", "<R>", "<stats>", "<mStat>", "<stat>", "<in>", "<out>", "<if>", "<pick>", "<pickbody>", "<loop1>", "<loop2>", "<assign>", "<RBracket>", "<RTriplet>", "<R0>", "<label>", "<goto>"};
 
-struct node* newNode(Ttoken* tk){ // Allocate memory for new node
-    	struct node* node
-        	= (struct node*)malloc(sizeof(struct node));
-
+struct node* newTermNode(Ttoken* tk){ // Allocate memory for new node
+    	 node* nNode
+        	= (struct node*)malloc(sizeof(node));
+	int i;
+	int j;
+	nNode->tk = (Ttoken*)malloc(sizeof(Ttoken));
     	//assign title
-    	node->tk = tk;
-	node->title.nonterm = nonterms[0];
+    	nNode->tk->ID = tk->ID;
+	for(j = 0; j < 9; j++){
+    		nNode->tk->tokenInstance[j] = tk->tokenInstance[j];
+	}
+    	nNode->tk->row = tk->row;
+    	nNode->tk->column = tk->column;
+	
+	for(i = 0; i < strlen(nonterms[0]); i++){
+    		nNode->tTitle.nonterm[i] = nonterms[0][i];
+	}
+	for(; i <=10; i++){
+    		nNode->tTitle.nonterm[10] = '\0';
+	}
+
 
     	//initialize children as NULL
-	node->one = NULL;
-    	node->two = NULL;
-    	node->three = NULL;
-	node->four = NULL;
-    	return (node);
+	nNode->one = NULL;
+    	nNode->two = NULL;
+    	nNode->three = NULL;
+	nNode->four = NULL;
+    	return nNode;
 }
-struct node* newNode(char* nonterms){ // Allocate memory for new node
-    	struct node* node
+struct node* newNode(char* nonTerms){ // Allocate memory for new node
+    	node* nNode
         	= (struct node*)malloc(sizeof(struct node));
-
+	int i;
     	//assign title
-    	node->tk = NULL;
-    	node->title.nonterm = nonterms;
-
+    	nNode->tk = NULL;
+	for(i = 0; i < 10; i++){
+    		nNode->tTitle.nonterm[i] = nonTerms[i];
+	}
+    	nNode->tTitle.nonterm[10] = '\0';
     	//initialize children as NULL
-	node->one = NULL;
-    	node->two = NULL;
-    	node->three = NULL;
-	node->four = NULL;
-    	return (node);
+	nNode->one = NULL;
+    	nNode->two = NULL;
+    	nNode->three = NULL;
+	nNode->four = NULL;
+    	return nNode;
 }
 #ifndef bool
 typedef enum { false, true } bool;
 #endif
-#include "node.h"
-
-struct node* insert(char dat, char* data, int dataLength, node* startNode){
-	int i = 0;
-	//creates a new node by loading up a char array and then putting it in
-	if (startNode == NULL){
-		char* letterHolder = malloc(sizeof(char) * dataLength);
-		for(; i < dataLength; i++){
-			letterHolder[i] = data[i];
-		}
-		startNode = newNode(letterHolder);
-	}
-	//check if midnode
-	else if(startNode->letters[0] == dat || startNode->letters[0] == dat + 32){
-		startNode->mid = insert(dat, data, dataLength, startNode->mid);
-	}
-	//this checks as follows: if both are lowercase is dat later in the alphabet||
-	// OR if both are uppercase is dat later in the alphabet
-	// OR if letters is lowercase and dat is uppercase and later in the alphabet
-	// OR if letters is uppercase and dat is lowercase and later in the alphabet
-	else if(( startNode->letters[0] > 95 && startNode->letters[0] < dat)
-			|| (dat < 91 && startNode->letters[0] < dat)
-			|| (startNode->letters[0] > 95 && dat < 91 && startNode->letters[0] - 32 < dat)
-			|| (startNode->letters[0] < 91 && dat > 95 && startNode->letters[0] + 32 < dat)){
-
-			startNode->right = insert(dat, data, dataLength, startNode->right);
-	}
-	else{
-		startNode->left = insert(dat, data, dataLength, startNode->left);
-	}
-	return startNode;
-}
-
-bool lengthCheckPass(char* word, int i){
-	if(i > MAX_WORD_LENGTH){
-		fprintf(stderr, "too long word encountered," 
-			"skipping to prevent buffer overflow\n");
-		return false;
-	}		
-	return true;
-}
-bool letterCheck(char c, int i){
-	if((c > 64 && c < 91) || (c > 96 && c < 123)||(c == 39 && i != 0)){
-		return true;
-	}
-	return false;
-}
-
-struct node* kbEntry(struct node* rootNode){
-	int c, freeFlag, skipFlag;
-	int i = freeFlag = skipFlag = 0;
-	char* word = NULL;
-	size_t size = 0;
-	while ((c = getchar()) != EOF) {
-		if(skipFlag == 0 && letterCheck(c, i)){
-			word = realloc(word, sizeof(*word)*(size+=16)+1);
-			word[i] = c;
-			word[i+1] = '\0';
-			i++;
-		}else if (skipFlag != 0 && !letterCheck(c, i)){
-			skipFlag = 0;
-		}else if (i > 0 && ((freeFlag = 1))&& skipFlag == 0){
-			rootNode= insert(word[0], word, strlen(word), rootNode);
-		}
-		if(!lengthCheckPass(word, i) && ((freeFlag = 1)) && ((skipFlag = 1))){}
-		if(freeFlag != 0){
-			size = i = freeFlag = 0;
-			free(word);
-			word = NULL;
-		}
-	}
-	if(i > 0){
-		rootNode = insert(word[0], word, strlen(word), rootNode);
-		free(word);
-	}
-	return rootNode;
-}
-
-
-
-struct node* fileEntry(char* fname, struct node* rootNode){
-	FILE *infp;
-	int c, freeFlag, skipFlag;
-	int i = freeFlag = skipFlag = 0; 
-	char* word = NULL;
-	size_t size = 0;
-
-	infp = fopen(fname, "r");
-	if(infp == NULL){
-		fprintf(stderr, "ERROR: tree.h: File does not exist at "
-			"specified location, or can't be opened.\n");
-		return NULL;
-	}
-	while ((c = fgetc(infp)) != EOF) {
-		if(skipFlag == 0 && letterCheck(c, i)){
-			word = realloc(word, sizeof(*word)*(size+=16)+1);
-			word[i] = c;
-			word[i+1] = '\0';
-			i++;
-		}else if (skipFlag != 0 && !letterCheck(c, i)){
-			skipFlag = 0;
-		}else if (i > 0 && ((freeFlag = 1))&& skipFlag == 0){
-			rootNode= insert(word[0], word, strlen(word), rootNode);
-		}
-		if(!lengthCheckPass(word, i) && ((freeFlag = 1)) && ((skipFlag = 1))){}
-		if(freeFlag != 0){
-			size = i = freeFlag = 0;
-			free(word);
-			word = NULL;
-		}
-	}
-	if(i > 0){
-		rootNode = insert(word[0], word, strlen(word), rootNode);
-		free(word);
-	}
-	return rootNode;
-}
-void printPreOrder(struct node* dataNode, int depth, char* fName){
+void printPreOrder(struct node* dataNode, int depth){
 	
 	if(dataNode == NULL){
 		return;
 	}
-	FILE* pre = fopen(fileName(fName, ".preorder"), "a");
 	int i;	
 	for(i = 0; i < depth; i++){
-		fprintf(pre, "  ");
+		fprintf(stdout, "  ");
 	}
-	fprintf(pre, "%c:%s\n", dataNode->letters[0], dataNode->letters);
-	printPreOrder(dataNode->left, depth+1, fName);
-	printPreOrder(dataNode->mid, depth+1, fName);
-	printPreOrder(dataNode->right, depth+1, fName);
-}
-void printInOrder(struct node* dataNode, int depth, char* fName){
-	if(dataNode == NULL){
-		return;
-	}
-	FILE* in = fopen(fileName(fName, ".inorder"), "a");
-	int i;
-	printInOrder(dataNode->left, depth+1, fName);
-	for(i = 0; i < depth; i++){
-		fprintf(in,"  ");
-	}
-	fprintf(in, "%c:%s\n", dataNode->letters[0], dataNode->letters);
-	printInOrder(dataNode->mid, depth+1, fName);
-	printInOrder(dataNode->right, depth+1, fName);
-}
-void printPostOrder(struct node* dataNode, int depth, char* fName){
-	if(dataNode == NULL){
-		return;
-	}
-	FILE* post = fopen(fileName(fName, ".postorder"), "a");
-
-	printPostOrder(dataNode->left, depth+1, fName);
-	printPostOrder(dataNode->mid, depth+1, fName);
-	printPostOrder(dataNode->right, depth+1, fName);
-	int i;	
-	for(i = 0; i < depth; i++){
-		fprintf(post,"  ");
-	}
-	printf("%c:%s\n", dataNode->letters[0], dataNode->letters);
+	fprintf(stdout, "%s\n", dataNode->tTitle.nonterm);
+	printPreOrder(dataNode->one, depth+1);
+	printPreOrder(dataNode->two, depth+1);
+	printPreOrder(dataNode->three, depth+1);
+	printPreOrder(dataNode->four, depth+1);
 }
 void deleteTree(struct node* dataNode){
 	if(dataNode == NULL){
 		fprintf(stderr, "\nERROR: tree.h: deleteTree: tree does not exist\n"); 
 		return;
 	}
-	if(dataNode->left != NULL){
-		deleteTree(dataNode->left);
+	if(dataNode->one != NULL){
+		deleteTree(dataNode->one);
 	}
-	if(dataNode->mid != NULL){
-		deleteTree(dataNode->mid);
+	if(dataNode->two != NULL){
+		deleteTree(dataNode->two);
 	}
-	if(dataNode->right != NULL){
-		deleteTree(dataNode->right);
+	if(dataNode->three != NULL){
+		deleteTree(dataNode->three);
 	}
-	free(dataNode->letters);
+	if(dataNode->four != NULL){
+		deleteTree(dataNode->four);
+	}
+	free(dataNode->tTitle.nonterm);
+	if(dataNode->tk != NULL){
+		free(dataNode->tk->tokenInstance);
+		free(dataNode->tk);
+	}
 	free(dataNode);
 }
+/*
 int fileOpener(char* fName, char* suffix){
 	char* result = malloc(strlen(fName) + strlen(suffix) + 2);
 	
@@ -248,4 +127,5 @@ char* fileName(char* fName, char* suffix){
 
 	return result;	
 }
+*/
 #endif
