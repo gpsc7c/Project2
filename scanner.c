@@ -139,22 +139,4 @@ Ttoken scanner(FILE* fName, char* c, int* row, int* col){//row and column should
 	return tokenSetter(-2, "n/a", -1, -1);	
 }
 
-//tests the scanner
-/*
-void testScanner(FILE* fName){
-	//create malloc'd variables to send to other functions
-	int *col = malloc(sizeof(int));
-	int *row = malloc(sizeof(int));
-	Ttoken *token = malloc(sizeof(Ttoken));
-	*col = 0;
-	*row = 1;
-	char c[2] = {'\0','\0'};				//character iterator
-	//until EOF is reached
-	while(token->ID != EOFTK){//create output
-		*token = filter(fName, c, row, col);
-		if(token->ID >= 0 ){
-			fprintf(stdout, "%s,   %s,   row %d,  character %d.\n",tokenNames[token->ID], token->tokenInstance, token->row,token->column);
-		}
-	}
-}*/
 #endif

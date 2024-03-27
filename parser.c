@@ -210,14 +210,9 @@ node* out(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
 	if(tk->ID == COUTTK){
 		nNode->one = newTermNode(tk);
 		*tk = scanner(file, c, row, col);	
-		if(tk->ID == IDTK){
-			nNode->two = newTermNode(tk);
-			*tk = scanner(file, c, row, col);	
-			*found = true;
-			return nNode;
-		}
-		error();
-		return NULL;
+		nNode->two = expr(tk, file, c, row, col);
+		*found = true;
+		return nNode;
 	}
 	return NULL;
 }

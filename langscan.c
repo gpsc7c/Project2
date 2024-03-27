@@ -242,6 +242,9 @@ int kwFinder(char* tokString){
 	if(strcmp(tokString, "repeat") == 0){
 		return REPEATTK;
 	}
+	if(strcmp(tokString, "until") == 0){
+		return UNTILTK;
+	}
 	if(strcmp(tokString, "cin") == 0){
 		return CINTK;
 	}
@@ -250,6 +253,9 @@ int kwFinder(char* tokString){
 	}
 	if(strcmp(tokString, "tape") == 0){
 		return TAPETK;
+	}	
+	if(strcmp(tokString, "label") == 0){
+		return LABELTK;
 	}
 	if(strcmp(tokString, "jump") == 0){
 		return JUMPTK;

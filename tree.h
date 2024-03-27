@@ -57,9 +57,7 @@ struct node* newNode(char* nonTerms){ // Allocate memory for new node
 	nNode->four = NULL;
     	return nNode;
 }
-#ifndef bool
-typedef enum { false, true } bool;
-#endif
+char* tokenNames[43] = {"IDTK", "INTTK", "ASSIGNTK", "GREATTK", "LESSTK", "ISEQUALTK", "NOTEQUALTK", "COLONTK", "COLONEQLTK", "PLUS", "MINUSTK", "MULTIPLYTK", "DIVIDETK", "EXPONTK", "DOTTK", "OPENPARENTK", "CLOSEPARENTK", "COMMATK", "OPENCURLTK", "CLOSECURLTK", "SEMICOLONTK", "OPENSQUARETK", "CLOSESQUARETK", "ORTK", "ANDTK", "STARTTK", "STOPTK", "WHILETK", "REPEATTK", "UNTILTK", "LABELTK", "RETURNTK", "CINTK", "COUTTK", "TAPETK", "JUMPTK", "IFTK", "THENTK", "PICKTK", "CREATETK", "SETTK", "FUNCTK", "EOFTK"};
 void printPreOrder(struct node* dataNode, int depth){
 	
 	if(dataNode == NULL){
@@ -67,9 +65,14 @@ void printPreOrder(struct node* dataNode, int depth){
 	}
 	int i;	
 	for(i = 0; i < depth; i++){
-		fprintf(stdout, "  ");
+		fprintf(stdout, " |");
 	}
-	fprintf(stdout, "%s\n", dataNode->tTitle.nonterm);
+	if(dataNode->tk != NULL){
+		fprintf(stdout, " \\-%s: %s at depth %d\n", dataNode->tTitle.nonterm, tokenNames[dataNode->tk->ID], depth);
+	}
+	else{
+		fprintf(stdout, " \\-%s at depth %d\n", dataNode->tTitle.nonterm, depth);
+	}
 	printPreOrder(dataNode->one, depth+1);
 	printPreOrder(dataNode->two, depth+1);
 	printPreOrder(dataNode->three, depth+1);
@@ -99,33 +102,4 @@ void deleteTree(struct node* dataNode){
 	}
 	free(dataNode);
 }
-/*
-int fileOpener(char* fName, char* suffix){
-	char* result = malloc(strlen(fName) + strlen(suffix) + 2);
-	
-	strcat(result, fName);
-	strcat(result, ".");
-	strcat(result, suffix);
-
-	FILE* resultFile = fopen(result, "w");
-
-	if(resultFile == NULL){
-		fprintf(stderr, "ERROR: Failed to open necessary output files");
-		return 1;
-	}
-	//char* fileType = malloc(strlen(suffix) + 1)
-	//fileType
-	fprintf(result, "This is the %s file.\n", suffix);
-	fclose(resultFile);
-	return 0;	
-}
-char* fileName(char* fName, char* suffix){
-	char* result = malloc(strlen(fName) + strlen(suffix) + 1);
-	
-	strcat(result, fName);
-	strcat(result, suffix);
-
-	return result;	
-}
-*/
 #endif
