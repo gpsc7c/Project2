@@ -7,8 +7,8 @@
 #include "node.h"
 #ifndef PARSER_H
 #define PARSER_H
-void error();
 
+void error(int tkDesired, int tkRecieved, int row, int col);
 
 node* gotochk(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found);
 node* label(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found);

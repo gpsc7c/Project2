@@ -13,8 +13,10 @@
 #ifndef PARSER_C
 #define PARSER_C
 //generic error handler, forces exit after output
-void error(){
-	fprintf(stderr, "\nAn error has occurred.\n");
+void error(int tkDesired, int tkReceived, int row, int col){
+	char IDtags[47][25] = { /*0*/"Identifier", "Integer", "=", ">", "<", /*5*/"==", "=!=", ":", ":=", "+", /*10*/"-", "*", "/", "^", ".", /*15*/"(", ")", ",", "{", "}", /*20*/";", "[", "]", "or", "and", /*25*/"start", "stop", "while", "repeat", "until", /*30*/"label", "return", "cin", "cout", "tape", /*35*/"jump", "if", "then", "pick", "create", /*40*/"set", "func", "EOF", "<, >, ==, =!=, or ...", "int, ID, or parentheses", /*45*/": or :=" ,"unknown"};
+	fprintf(stderr, "\nAn error has occurred: '%s' token was expected,\n"
+			"token '%s' received. Error on row %d at column %d\n", IDtags[tkDesired], IDtags[tkReceived], row, col);
 	exit(-1);
 }
 ///////////////////////////////////////////////////
@@ -58,8 +60,9 @@ node* R0(Ttoken* tk, FILE* file, char* c, int* row, int* col){//passing in all t
 				return nNode;
 			}
 		}
+		error(14, tk->ID, tk->row, tk->column);
 	}
-	error();//in case where an error occurs
+	error(42, tk->ID, tk->row, tk->column);//in case where an error occurs
 	return NULL;
 }
 //additional node for the <expression>/<R0>/<expression> that R0 is always a part of
@@ -82,8 +85,9 @@ node* RBrackets(Ttoken* tk, FILE* file, char* c, int* row, int* col){
 			*tk = scanner(file, c, row, col);
 			return nNode;
 		}
+		error(22, tk->ID, tk->row, tk->column);
 	}
-	error();
+	error(21, tk->ID, tk->row, tk->column);
 	return NULL;
 }
 //required node for goto pattern: jumptk IDtk
@@ -98,7 +102,7 @@ node* gotochk(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
 			*found = true;
 			return nNode;
 		}
-		error();
+		error(0, tk->ID, tk->row, tk->column);
 		return NULL;
 	}
 	return nNode;
@@ -115,7 +119,7 @@ node* label(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
 			*found = true;
 			return nNode;
 		}
-		error();
+		error(0, tk->ID, tk->row, tk->column);
 		return NULL;
 	}
 	return nNode;
@@ -139,10 +143,10 @@ node* assign(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
 			*found = true;
 			return nNode;
 		}
-		error();
+		error(2, tk->ID, tk->row, tk->column);
 	}
 	if(set == true){
-		error();
+		error(0, tk->ID, tk->row, tk->column);
 	}
 	return NULL;
 }
@@ -160,7 +164,7 @@ node* loop2(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
 			*found = true;
 			return nNode;
 		}
-		error();
+		error(29, tk->ID, tk->row, tk->column);
 	}
 	return NULL;	
 }
@@ -187,7 +191,7 @@ node* pickbody(Ttoken* tk, FILE* file, char* c, int* row, int* col){
 		nNode->three = stat(tk, file, c, row, col);
 		return nNode;
 	}
-	error();
+	error(7, tk->ID, tk->row, tk->column);
 	return NULL;
 }
 //required node for pick pattern: Repeat <stat> Until <RBrackets>
@@ -217,7 +221,7 @@ node* ifchk(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
 			*found = true;
 			return nNode;
 		}	
-		error();
+		error(37, tk->ID, tk->row, tk->column);
 		return NULL;
 	}
 	return NULL;
@@ -246,7 +250,7 @@ node* in(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* found){
 			*found = true;
 			return nNode;
 		}
-		error();
+		error(0, tk->ID, tk->row, tk->column);
 		return NULL;
 	}
 	return NULL;
@@ -287,8 +291,7 @@ node* stat(Ttoken* tk, FILE* file, char* c, int* row, int* col){
 			*tk = scanner(file, c, row, col);
 			return nNode;
 		}
-		
-		error();
+		error(20, tk->ID, tk->row, tk->column);
 		return NULL;
 	}
 	nNode->one = block(tk, file, c, row, col);
@@ -322,7 +325,7 @@ node* R(Ttoken* tk, FILE* file, char* c, int* row, int* col){
 			*tk = scanner(file, c, row, col);
 			return nNode;
 		}
-		error();
+		error(0, tk->ID, tk->row, tk->column);
 		return NULL;
 	}
 	if(tk->ID == IDTK){
@@ -335,7 +338,7 @@ node* R(Ttoken* tk, FILE* file, char* c, int* row, int* col){
 		*tk = scanner(file, c, row, col);
 		return nNode;
 	}
-	error();
+	error(44, tk->ID, tk->row, tk->column);
 	return NULL;
 }
 //required node for M pattern: ^ <M> | <R>
@@ -418,9 +421,11 @@ node* facvars(Ttoken* tk, FILE* file, char* c, int* row, int* col, bool* coleql)
 				*tk = scanner(file, c, row, col);
 				return nNode;	
 			}
+			error(45, tk->ID, tk->row, tk->column);
 		}
+		error(0, tk->ID, tk->row, tk->column);
 	}
-	error();
+	error(39, tk->ID, tk->row, tk->column);
 	return NULL;
 }
 //edited required node for vars pattern: [empty] | <facvars> | <facvars> INTTK ; <vars>
@@ -443,7 +448,7 @@ node* vars(Ttoken* tk, FILE* file, char* c, int* row, int* col){
 				return nNode;
 			}
 		}
-		error();
+		error(1, tk->ID, tk->row, tk->column);
 		return NULL;
 	}
 	return nNode;
@@ -452,7 +457,7 @@ node* vars(Ttoken* tk, FILE* file, char* c, int* row, int* col){
 node* block(Ttoken* tk, FILE* file, char* c, int* row, int* col){
 	node* nNode = newNode(nonterms[3]);
 	if(tk->ID != OPENCURLTK){
-		error();
+		error(18, tk->ID, tk->row, tk->column);
 		return NULL;
 	}
 	nNode->one = newTermNode(tk);
@@ -460,7 +465,7 @@ node* block(Ttoken* tk, FILE* file, char* c, int* row, int* col){
 	nNode->two = vars(tk,file,c,row,col);
 	nNode->three = stats(tk,file,c,row,col);
 	if(tk->ID != CLOSECURLTK){
-		error();
+		error(19, tk->ID, tk->row, tk->column);
 		return NULL;
 	}
 	nNode->four = newTermNode(tk);	
@@ -479,8 +484,9 @@ node* func(Ttoken* tk, FILE* file, char* c, int* row, int* col){
 			nNode->three = block(tk, file, c, row, col);
 			return nNode;
 		}
+		error(0, tk->ID, tk->row, tk->column);
 	}
-	error();
+	error(41, tk->ID, tk->row, tk->column);
 	return NULL;
 }
 //required node for program pattern: <vars> tape <func> <block | <vars> tape <block>
@@ -499,7 +505,7 @@ node* program(Ttoken* tk, FILE* file, char* c, int* row, int* col){
 		root->three = block(tk,file,c,row,col);
 		return root;
 	}
-	error();
+	error(34, tk->ID, tk->row, tk->column);
 	return NULL;
 }
 //calls the parser to generate the tree
